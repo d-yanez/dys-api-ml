@@ -14,7 +14,7 @@ exports.notification = async (req, res) => {
     };
     //mail.send(message)
 
-    res.status(200).send({msg:'re'})
+    res.status(200).send({msg:'ok'})
 
 
 }
