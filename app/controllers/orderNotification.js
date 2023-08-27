@@ -18,3 +18,11 @@ exports.notification = async (req, res) => {
 
 
 }
+
+exports.authRedirect = async (req, res) => {
+    console.log("authRedirect...")
+    console.log(req.body)
+    res.status(200).send({msg:'ok'})
+
+
+}
