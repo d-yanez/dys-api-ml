@@ -12,8 +12,5 @@ router.get(
     `/${path}/auth`,
     controller.authRedirect
 )
-router.post(
-    '/mail',
-    controller.mail
-)
+
 module.exports = router
