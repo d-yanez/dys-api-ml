@@ -24,7 +24,7 @@ exports.authRedirect = async (req, res) => {
     console.log(req.body)
     console.log(`code->${req.query.code}`)
     console.log(`state->${req.query.state}`)
-    res.status(200).send({msg:'ok'})
+    res.status(200).send({code:req.query.code})
 
 
 }
@@ -46,3 +46,5 @@ exports.mail = async (req, res) => {
 
 
 }
+
+

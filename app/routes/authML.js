@@ -1,16 +1,11 @@
 const express = require("express")
-const controller = require("../controllers/orderNotification")
+const controller = require("../controllers/authML")
 const router = express.Router()
 
-const path = 'callback'
+const path = 'ml'
 
-router.post(
-    `/${path}`,
-    controller.notification
-)
 router.get(
-    `/${path}/auth`,
-    controller.authRedirect
+    `/${path}/uriredirect`,
+    controller.mlUriRedirect
 )
-
 module.exports = router
