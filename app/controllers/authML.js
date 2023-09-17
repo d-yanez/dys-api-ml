@@ -1,6 +1,11 @@
 
 const mail = require('../utils/mail')
-const {API_ML_CLIENT_ID} = process.env
+const axios = require('axios')
+const FormData = require('form-data');
+
+const authMLServices = require('../services/authML')
+
+const {API_ML_CLIENT_ID,API_ML_CLIENT_SECRET,API_ML_REDIRECT_URI} = process.env
 
 exports.mlUriRedirect = async (req, res) => {
     console.log("mlUriRedirect...")
@@ -15,3 +20,32 @@ exports.mlUriRedirect = async (req, res) => {
     res.redirect(redirectUrl);
     
 }
+
+
+//Important: user pass as future as input
+exports.getAccessTokenAsync = async (req, res) => {
+    //call services asincrono
+    authMLServices.getAccessTokenAsync();
+    
+    res.send({staus:'ok'})
+}
+
+
+   /*Parámetros
+    grant_type: refresh_token indica que la operación deseada es actualizar un token.
+    refresh_token: el refresh token del paso de aprobación guardado previamente.
+    client_id: es el APP ID de la aplicación que se creó.
+    client_secret: es Secret Key que se generó al crear la
+    source:https://developers.mercadolibre.com.ar/es_ar/autenticacion-y-autorizacion
+    */
+exports.getAccessTokenByRefreshToken = async (req, res) => {
+    
+    //get token by refresh token
+    console.log("getAccessTokenByRefreshToken - inicio")
+    let data = await authMLServices.getAccessTokenByRefreshToken();
+
+    console.log("getAccessTokenByRefreshToken - inicio")
+    res.send({token:data})
+    
+}
+
