@@ -174,7 +174,7 @@ exports.getAccessTokenAsync = async () => {
     console.log("call getCodeTG...")
 
     const responseCodeTg = await this.getCodeTG();
-    const  respData = 'Error'
+    let  respData = 'Error'
     if(responseCodeTg.status){
 
            //let payload = { name: 'John Doe', occupation: 'gardener' };
@@ -214,8 +214,8 @@ exports.getAccessTokenAsync = async () => {
         console.log(`refresh_token->${refresh_token}`)
 
         //save the access_token and refresh_token in mongo to future to get access token by refresh_token
-        const responseRefreshToken = await this.saveRefreshToken(refresh_token);
-        const responseAccessToken = await this.saveAccessToken(access_token);
+        const responseRefreshToken = await this.saveRefreshToken(refresh_token)
+        const responseAccessToken = await this.saveAccessToken(access_token)
 
         respData = access_token
         //console.log(data);
@@ -251,16 +251,25 @@ exports.getAccessTokenByRefreshToken = async (req, res) => {
     console.log("getAccessToken")
     let refreshToken = await this.getRefreshToken()
     //let payload = { name: 'John Doe', occupation: 'gardener' };
-    const params = new URLSearchParams();
-    params.append('grant_type', 'refresh_token')
-    params.append('client_id', API_ML_CLIENT_ID)
-    params.append('client_secret', API_ML_CLIENT_SECRET)
-    params.append('refresh_token', refreshToken)
+    //const params = new URLSearchParams();
+    //params.append('grant_type', 'refresh_token')
+    //params.append('client_id', API_ML_CLIENT_ID)
+    //params.append('client_secret', API_ML_CLIENT_SECRET)
+    //params.append('refresh_token', refreshToken)
+
+    const params = new URLSearchParams(
+        {
+            grant_type: 'authorization_code',
+            client_id:API_ML_CLIENT_ID,
+            client_secret:API_ML_CLIENT_SECRET,
+            refresh_token:refreshToken
+        }
+    );
 
 
     
     const url_token = "https://api.mercadolibre.com/oauth/token"
-    const responseML = await axios.post(url_token,params)
+    const responseML = await axios.post(url_token,params.toString())
 
     const data = responseML.data.access_token;
     console.log(data);

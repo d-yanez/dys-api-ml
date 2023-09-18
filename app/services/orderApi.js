@@ -1,5 +1,7 @@
 
 const model = require('../models/param')
+const {URLSearchParams} = require('url');
+const axios = require('axios')
 
 exports.saveData = async (req, res) => {
     console.log("saving the next Stock...")
@@ -60,13 +62,16 @@ exports.getOrderInfo = async (orderNumber) => {
     const respToken = await axios.post(uri_token)
     
     //2.- get order info from api ML by order number
-    const form_data = new FormData();
+    //const form_data = new FormData();
     let auth = `Bearer ${respToken.token} `
-    form_data.append('Authorization',auth)
+    //form_data.append('Authorization',auth)
     const uriOrder = `https://api.mercadolibre.com/orders/${orderNumber}`
 
     console.log(`getOrderInfo - order info for ->${orderNumber}`)
-    const orderResponse = await axios.post(uriOrder, form_data,{ headers: form_data.getHeaders()})
+    const config = {
+        headers: { 'Authorization': auth }
+      };
+    const orderResponse = await axios.get(uriOrder, config)
     console.log(`getOrderInfo.end`)
     return orderResponse
     
