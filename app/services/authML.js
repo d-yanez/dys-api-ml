@@ -52,7 +52,7 @@ exports.saveCodeTg = async (codeTg) => {
 
 //get code tgr from mondo after redirect first
 exports.getCodeTG = async () => {
-    console.log(`saveCodeTg - init - codeTg: ${codeTg}`)
+    console.log(`getCodeTG init`)
     const doc = await model.findOne({ name: 'code_tg',type:'auth_ml' });
     if (doc){
         console.log(`tg code get success->${doc.value}`)

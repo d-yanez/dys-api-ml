@@ -24,7 +24,7 @@ exports.notification = async (req, res) => {
 // auth first time => save code tg and call api ml to get info access token and refresh token
 exports.authRedirect = async (req, res) => {
     console.log("authRedirect...")
-    console.log(req.body)
+    //console.log(req.body)
     console.log(`code->${req.query.code}`)
     console.log(`state->${req.query.state}`)
     //save tgr in mongo!!
