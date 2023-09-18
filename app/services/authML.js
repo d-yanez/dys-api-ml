@@ -1,5 +1,6 @@
 
 const model = require('../models/param')
+
 const FormData = require('form-data');
 const {API_ML_CLIENT_ID,API_ML_CLIENT_SECRET,API_ML_REDIRECT_URI} = process.env
 const {URLSearchParams} = require('url');
@@ -205,17 +206,20 @@ exports.getAccessTokenAsync = async () => {
         const responseML = await axios.post(url_token, params.toString())
         
         console.log(`result responseML...`)
-        console.log(responseML)
-        if(responseML & responseML.data !== 'undefined'){
-            const access_token = responseML.data.access_token
-            const refresh_token = responseML.data.refresh_token
-            //save the access_token and refresh_token in mongo to future to get access token by refresh_token
-            const responseRefreshToken = await authMLServices.saveRefreshToken(refresh_token);
-            const responseAccessToken = await authMLServices.saveAccessToken(access_token);
+        //console.log(responseML)
+        //if(responseML & responseML.data !== 'undefined'){
+        const access_token = responseML.data.access_token
+        const refresh_token = responseML.data.refresh_token
+        console.log(`access_token->${access_token}`)
+        console.log(`refresh_token->${refresh_token}`)
 
-            respData = access_token
-            console.log(data);
-        }
+        //save the access_token and refresh_token in mongo to future to get access token by refresh_token
+        const responseRefreshToken = await this.saveRefreshToken(refresh_token);
+        const responseAccessToken = await this.saveAccessToken(access_token);
+
+        respData = access_token
+        //console.log(data);
+        //}
         
     }
     else{
