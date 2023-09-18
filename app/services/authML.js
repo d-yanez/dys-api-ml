@@ -4,6 +4,7 @@ const FormData = require('form-data');
 const {API_ML_CLIENT_ID,API_ML_CLIENT_SECRET,API_ML_REDIRECT_URI} = process.env
 const {URLSearchParams} = require('url');
 const { param } = require('../routes/authML');
+const axios = require('axios')
 
 exports.saveData = async (req, res) => {
     console.log("saving the next Stock...")
