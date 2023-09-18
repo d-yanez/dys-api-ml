@@ -249,7 +249,7 @@ exports.getAccessTokenAsync = async () => {
 exports.getAccessTokenByRefreshToken = async (req, res) => {
     
     console.log("getAccessTokenByRefreshToken")
-    let refreshToken = await this.getRefreshToken()
+    let resp = await this.getRefreshToken()
     //let payload = { name: 'John Doe', occupation: 'gardener' };
     //const params = new URLSearchParams();
     //params.append('grant_type', 'refresh_token')
@@ -262,7 +262,7 @@ exports.getAccessTokenByRefreshToken = async (req, res) => {
             grant_type: 'refresh_token',
             client_id:API_ML_CLIENT_ID,
             client_secret:API_ML_CLIENT_SECRET,
-            refresh_token:refreshToken
+            refresh_token:resp.refreshToken
         }
     );
 
