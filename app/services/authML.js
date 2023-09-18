@@ -166,9 +166,9 @@ exports.getAccessTokenCallBack =  () => {
 //Important: user pass as future as input
 exports.getAccessTokenAsync = async () => {
     
-    console.log("getAccessToken")
+    console.log("call getCodeTG...")
 
-    const responseCodeTg = this.getCodeTG();
+    const responseCodeTg = await this.getCodeTG();
     const  respData = 'Error'
     if(responseCodeTg.status){
 
