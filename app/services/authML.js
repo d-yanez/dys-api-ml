@@ -1,6 +1,6 @@
 
 const model = require('../models/param')
-
+const FormData = require('form-data');
 
 exports.saveData = async (req, res) => {
     console.log("saving the next Stock...")
@@ -173,7 +173,7 @@ exports.getAccessTokenAsync = async () => {
     if(responseCodeTg.status){
 
            //let payload = { name: 'John Doe', occupation: 'gardener' };
-        console.log(`code tg getted!!`)
+        console.log(`code tg getted!! now completing formdata...`)
         const form_data = new FormData();
         form_data.append('grant_type', 'authorization_code')
         form_data.append('client_id', API_ML_CLIENT_ID)
