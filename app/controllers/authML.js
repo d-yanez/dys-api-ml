@@ -5,7 +5,7 @@ const FormData = require('form-data');
 
 const authMLServices = require('../services/authML')
 
-const {API_ML_CLIENT_ID,API_ML_CLIENT_SECRET,API_ML_REDIRECT_URI} = process.env
+const {API_ML_CLIENT_ID} = process.env
 
 exports.mlUriRedirect = async (req, res) => {
     console.log("mlUriRedirect...")

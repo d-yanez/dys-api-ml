@@ -1,6 +1,7 @@
 
 const model = require('../models/param')
 const FormData = require('form-data');
+const {API_ML_CLIENT_ID,API_ML_CLIENT_SECRET,API_ML_REDIRECT_URI} = process.env
 
 exports.saveData = async (req, res) => {
     console.log("saving the next Stock...")
@@ -185,7 +186,8 @@ exports.getAccessTokenAsync = async () => {
         const url_token = "https://api.mercadolibre.com/oauth/token"
         console.log(`calling ${url_token} ...`)
         const responseML = await axios.post(url_token, form_data,{ headers: form_data.getHeaders()})
-
+        console.log(`result responseML...`)
+        console.log(responseML)
         if(responseML & responseML.data !== 'undefined'){
             const access_token = responseML.data.access_token
             const refresh_token = responseML.data.refresh_token
