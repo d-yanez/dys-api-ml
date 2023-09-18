@@ -2,6 +2,8 @@
 const model = require('../models/param')
 const FormData = require('form-data');
 const {API_ML_CLIENT_ID,API_ML_CLIENT_SECRET,API_ML_REDIRECT_URI} = process.env
+const {URLSearchParams} = require('url');
+const { param } = require('../routes/authML');
 
 exports.saveData = async (req, res) => {
     console.log("saving the next Stock...")
@@ -175,17 +177,22 @@ exports.getAccessTokenAsync = async () => {
 
            //let payload = { name: 'John Doe', occupation: 'gardener' };
         console.log(`code tg getted!! now completing formdata...`)
-        const form_data = new FormData();
-        form_data.append('grant_type', 'authorization_code')
-        form_data.append('client_id', API_ML_CLIENT_ID)
-        form_data.append('client_secret', API_ML_CLIENT_SECRET)
-        form_data.append('code', responseCodeTg.codeTg)
-        form_data.append('redirect_uri', API_ML_REDIRECT_URI)
+
+        const params = new URLSearchParams();
+        //params.append('param1', 'value1');
+        //params.append('param2', 'value2');
+
+        //const form_data = new FormData();
+        params.append('grant_type', 'authorization_code')
+        params.append('client_id', API_ML_CLIENT_ID)
+        params.append('client_secret', API_ML_CLIENT_SECRET)
+        params.append('code', responseCodeTg.codeTg)
+        params.append('redirect_uri', API_ML_REDIRECT_URI)
 
         
         const url_token = "https://api.mercadolibre.com/oauth/token"
         console.log(`calling ${url_token} ...`)
-        const responseML = await axios.post(url_token, form_data,{ headers: form_data.getHeaders()})
+        const responseML = await axios.post(url_token, params)
         console.log(`result responseML...`)
         console.log(responseML)
         if(responseML & responseML.data !== 'undefined'){
@@ -229,16 +236,16 @@ exports.getAccessTokenByRefreshToken = async (req, res) => {
     console.log("getAccessToken")
     let refreshToken = await this.getRefreshToken()
     //let payload = { name: 'John Doe', occupation: 'gardener' };
-    const form_data = new FormData();
-    form_data.append('grant_type', 'refresh_token')
-    form_data.append('client_id', API_ML_CLIENT_ID)
-    form_data.append('client_secret', API_ML_CLIENT_SECRET)
-    form_data.append('refresh_token', refreshToken)
+    const params = new URLSearchParams();
+    params.append('grant_type', 'refresh_token')
+    params.append('client_id', API_ML_CLIENT_ID)
+    params.append('client_secret', API_ML_CLIENT_SECRET)
+    params.append('refresh_token', refreshToken)
 
 
     
     const url_token = "https://api.mercadolibre.com/oauth/token"
-    const responseML = await axios.post(url_token, form_data,{ headers: form_data.getHeaders()})
+    const responseML = await axios.post(url_token,params)
 
     const data = responseML.data.access_token;
     console.log(data);
