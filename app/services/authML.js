@@ -286,6 +286,6 @@ exports.getAccessTokenByRefreshToken = async (req, res) => {
 
 
     
-    res.send({token:data})
+    return data
     
 }
