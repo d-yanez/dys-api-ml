@@ -42,7 +42,7 @@ exports.getAccessTokenByRefreshToken = async (req, res) => {
     
     //get token by refresh token
     console.log("getAccessTokenByRefreshToken - inicio")
-    let data = await authMLServices.getAccessTokenByRefreshToken();
+    let data = await authMLServices.getAccessTokenByRefreshToken()
 
     console.log("getAccessTokenByRefreshToken - inicio")
     res.send({token:data})
