@@ -5,7 +5,7 @@ const FormData = require('form-data');
 
 const authMLServices = require('../services/authML')
 
-const {API_ML_CLIENT_ID} = process.env
+const {API_ML_CLIENT_ID,USER_TOKEN,PASS_TOKEN} = process.env
 
 exports.mlUriRedirect = async (req, res) => {
     console.log("mlUriRedirect...")
@@ -42,7 +42,14 @@ exports.getAccessTokenByRefreshToken = async (req, res) => {
     
     //get token by refresh token
     console.log("getAccessTokenByRefreshToken - inicio")
-    let data = await authMLServices.getAccessTokenByRefreshToken()
+    let user = req.headers['user']
+    let pass = req.headers['pass']
+    let data = 'Error'
+    
+    if(user === USER_TOKEN && pass === PASS_TOKEN){
+        data = await authMLServices.getAccessTokenByRefreshToken()
+    }
+    
 
     console.log("getAccessTokenByRefreshToken - inicio")
     res.send({token:data})
