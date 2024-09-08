@@ -2,20 +2,13 @@
 const mail = require('../utils/mail')
 const authML = require('../services/authML')
 const authMLController = require('../controllers/authML')
+const orderWorder = require('../controllers/orderWorker')
 
 exports.notification = async (req, res) => {
     console.log("notification...")
-    console.log(req.body)
-    
-    var message = {
-        from: "ventasml@dyhsopnow.cl",
-        to: "dyanez@dyhsopnow.cl",
-        subject: "Ejemplo de asunto de correo",
-        text: "Plaintext version of the message",
-        html: "<p>Link para entrar a la página de microlab: <br> <a href='https://microlab.ec'></a></p>"
-    };
+    //console.log(`message ml: ${req.body}`)
     //mail.send(message)
-    
+    orderWorder.order(req.body)
 
     res.status(200).send({msg:'ok'})
 
