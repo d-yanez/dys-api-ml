@@ -10,7 +10,8 @@ exports.notificationOutStock = async (sku) => {
   //const usuarioId = req.params.id;
   //res.send(`El ID del usuario es: ${usuarioId}`);
   console.log('[notification] - inicio');
-  console.log('[notification] - recipientPhone: ',TO_PHONE_NUMBER);
+  console.log(`[notification] - recipientPhone: ${TO_PHONE_NUMBER}`);
+  console.log(`[notification] - TOKN: ${META_ACCESS_TOKEN}`);
   let message = `https://railway-node-express-app.up.railway.app/views?sku=${sku}`
   try {
     const response = await axios.post(
