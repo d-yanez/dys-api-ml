@@ -6,7 +6,7 @@ const path = 'meta'
 
 
 router.post(
-    `/${path}/message/:to`,
+    `/${path}/message/:sku`,
     controller.notification
 )
 module.exports = router

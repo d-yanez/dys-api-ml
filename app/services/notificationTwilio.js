@@ -23,7 +23,7 @@ exports.notification = async (req, res) => {
 
 exports.outStockNotification = async (sku) =>{
   console.log('outStockNotification - init')
-  let message = `Sku https://railway-node-express-app.up.railway.app/views?sku=${sku} agotado en Mercado Libre, favor validar!`
+  let message = `Sku https://railway-node-express-app.up.railway.app/views?sku=${sku} agotado en Mercado Libre Full`
   
   client.messages
   .create({

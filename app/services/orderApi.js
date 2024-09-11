@@ -1,6 +1,10 @@
 
 const model = require('../models/param')
 const {URLSearchParams} = require('url');
+const messageMetaServices = require('../services/messageMeta')
+
+
+
 const axios = require('axios')
 const {USER_TOKEN,PASS_TOKEN} = process.env
 
@@ -108,6 +112,11 @@ exports.getOrderInfo = async (orderNumber) => {
               );
               
               console.log(`available_quantity: ${respuesta.data.available_quantity}`);
+              if (respuesta.data.available_quantity == 0){
+                let sku = item.id.slice(3);
+                console.log(`sku out stock ->${sku}`)
+                messageMetaServices.notificationOutStock(sku);
+              }
 
 
             } catch (error) {
