@@ -30,6 +30,7 @@ function createWorker() {
 
 exports.order = async (orderMessage) => {
     console.log(`[orderWorker.order......] init`);
+    console.log(orderMessage);
 
     if ('resource' in orderMessage) {
         // Crear dos workers
