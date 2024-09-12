@@ -118,18 +118,11 @@ exports.getOrderInfo = async (orderNumber) => {
                 messageMetaServices.notificationOutStock(sku);
               }
               else{
-                console.log("validando si tiene variacion full?")
-                let inventory_id = ""
-                if(respuesta.data.variations.length > 0){
-                  console.log("obteniendo el invenroty id")
-                  for (let i = 0; i < respuesta.data.variations.length; i++){
-                    if (respuesta.data.variations[i].inventory_id !== undefined){
-                      inventory_id = respuesta.data.variations[i].inventory_id;
-                      break;
-                    }
-                  }
+
+                if(isFulfillment(respuesta.data)){
+                  let inventory_id = getInventoryId(respuesta.data)
                   console.log(`inventory_id: ${inventory_id}`);
-                  if(inventory_id !== ""){
+                  if(inventory_id !== null){
                     //consultamos stock en FULL!!!
                     const respuestaFull = await axios.get(`https://api.mercadolibre.com/inventories/${inventory_id}/stock/fulfillment`,
                       {
@@ -162,14 +155,10 @@ exports.getOrderInfo = async (orderNumber) => {
                     }
 
                   }
-
-
                 }
-                else {
-                  console.log("Sin variacion en full para invenroty id")
+                else{
+                  console.log("No es fulfillment")
                 }
-                //console.log(`available_quantity: ${respuesta.data.available_quantity}`);
-
               }
 
 
@@ -186,4 +175,35 @@ exports.getOrderInfo = async (orderNumber) => {
     console.log(`getOrderInfo.end`)
     return response
     
+}
+
+function isFulfillment(data){
+  console.log(`data.shipping.logistic_type ->${data.shipping.logistic_type}`)
+    return data.shipping.logistic_type === "fulfillment";
+}
+
+function getInventoryId(data){
+  let resp = {}
+  console.log("obteniendo inventory_id...")
+  let inventory_id = null
+  //buscamos primero en cuerpo principal
+  if (data.inventory_id !== null){
+      console.log(`Encontrado en data.inventory_id->${data.inventory_id}`)
+      return data.inventory_id;
+  }
+
+  if(data.variations.length > 0){
+    console.log("obteniendo el invenroty id")
+    for (let i = 0; i < data.variations.length; i++){
+      if (data.variations[i].inventory_id !== undefined){
+        inventory_id = data.variations[i].inventory_id;
+        console.log(`Encontrado en data.variations[${i}].inventory_id->${inventory_id}`)
+        break;
+      }
+    }
+  }
+  else {
+    console.log("Sin variacion en full para invenroty id")
+  }
+  return inventory_id
 }
