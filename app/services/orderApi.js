@@ -111,11 +111,65 @@ exports.getOrderInfo = async (orderNumber) => {
                   }
               );
               
-              console.log(`available_quantity: ${respuesta.data.available_quantity}`);
+              console.log(`available_quantity (main): ${respuesta.data.available_quantity}`);
               if (respuesta.data.available_quantity == 0){
                 let sku = item.id.slice(3);
                 console.log(`sku out stock ->${sku}`)
                 messageMetaServices.notificationOutStock(sku);
+              }
+              else{
+                console.log("validando si tiene variacion full?")
+                let inventory_id = ""
+                if(respuesta.data.variations.length > 0){
+                  console.log("obteniendo el invenroty id")
+                  for (let i = 0; i < respuesta.data.variations.length; i++){
+                    if (respuesta.data.variations[i].inventory_id !== undefined){
+                      inventory_id = respuesta.data.variations[i].inventory_id;
+                      break;
+                    }
+                  }
+                  console.log(`inventory_id: ${inventory_id}`);
+                  if(inventory_id !== ""){
+                    //consultamos stock en FULL!!!
+                    const respuestaFull = await axios.get(`https://api.mercadolibre.com/inventories/${inventory_id}/stock/fulfillment`,
+                      {
+                          headers: {
+                            'Authorization': `Bearer ${respToken.data.token}` 
+                          }
+                        }
+                    );
+
+                    if (!respuestaFull || typeof respuestaFull !== 'object') {
+                      console.error('La respuesta no es un objeto válido o es null.');
+                      return false;
+                    }
+                      // Verifica si contiene propiedades clave
+                    if (!respuestaFull.hasOwnProperty('data')) {
+                      console.error('La respuesta no contiene la propiedad "data".');
+                      return false;
+                    }
+                    // Valida que el campo precio no sea null o undefined
+                    if (respuestaFull.data.available_quantity === null || respuestaFull.data.available_quantity === undefined) {
+                      console.error('El campo "available_quantity" es inválido.');
+                      return false;
+                    }
+                    //todo ok!!
+                    console.log(`available_quantity for inventory_id(${inventory_id}): ${respuestaFull.data.available_quantity}`);
+                    if (respuestaFull.data.available_quantity == 0){
+                      let sku = item.id.slice(3);
+                      console.log(`sku out stock (en FULL) ->${sku}`)
+                      messageMetaServices.notificationOutStock(sku);
+                    }
+
+                  }
+
+
+                }
+                else {
+                  console.log("Sin variacion en full para invenroty id")
+                }
+                //console.log(`available_quantity: ${respuesta.data.available_quantity}`);
+
               }
 
 
