@@ -163,10 +163,11 @@ exports.getOrderInfo = async (orderNumber) => {
 
               }
               else{
+
                 
                 let inventory_id = getInventoryId(respuesta.data)
                 console.log(`inventory_id: ${inventory_id}`);
-                if(inventory_id !== null){
+                if(isFulfillment(respuesta.data) && inventory_id !== null){
                   //consultamos stock en FULL!!!
                   const respuestaFull = await axios.get(`https://api.mercadolibre.com/inventories/${inventory_id}/stock/fulfillment`,
                     {
