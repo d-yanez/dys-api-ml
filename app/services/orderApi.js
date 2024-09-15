@@ -2,6 +2,8 @@
 const model = require('../models/param')
 const {URLSearchParams} = require('url');
 const messageMetaServices = require('../services/messageMeta')
+const LogOrderSku = require('../models/logOrderSku');
+const connectDB = require('../../config/db')
 
 
 
@@ -115,47 +117,103 @@ exports.getOrderInfo = async (orderNumber) => {
               if (respuesta.data.available_quantity == 0){
                 let sku = item.id.slice(3);
                 console.log(`sku out stock ->${sku}`)
-                messageMetaServices.notificationOutStock(sku);
+                /*let resp = await skuOrderExist(sku,orderNumber)
+                if(!resp){
+
+                  messageMetaServices.notificationOutStock(sku)
+                }*/
+
+                  // Conectar a MongoDB
+                /*connectDB()
+                .then(() => {
+                  console.log('Conexión a MongoDB exitosa');
+
+
+                  // Llamar a la función para manejar la notificación
+                  skuOrderExist(sku,orderNumber)
+                    .then(result => {
+                      if (result) {
+                        console.log('La orden ya existe en la base de datos.');
+                      } else {
+                        console.log('La orden fue insertada en la base de datos.');
+                      }
+                    })
+                    .catch(err => {
+                      console.error('Error procesando la orden:', err);
+                    });
+                })
+                .catch((error) => {
+                  console.error('No se pudo conectar a MongoDB:', error);
+                }); */
+
+                //usando async/awai
+                    // Esperar la conexión a la base de datos
+                await connectDB();
+                console.log('Conexión a MongoDB exitosa');
+                    // Esperar el manejo de la notificación de la orden
+                const result = await skuOrderExist(sku,orderNumber);
+                // Verificar el resultado
+                if (result) {
+                  console.log('La orden ya existe en la base de datos.');
+                } else {
+                  console.log('La orden fue insertada en la base de datos.');
+                  messageMetaServices.notificationOutStock(sku)
+                }
+                
+
               }
               else{
-
-                if(isFulfillment(respuesta.data)){
-                  let inventory_id = getInventoryId(respuesta.data)
-                  console.log(`inventory_id: ${inventory_id}`);
-                  if(inventory_id !== null){
-                    //consultamos stock en FULL!!!
-                    const respuestaFull = await axios.get(`https://api.mercadolibre.com/inventories/${inventory_id}/stock/fulfillment`,
-                      {
-                          headers: {
-                            'Authorization': `Bearer ${respToken.data.token}` 
-                          }
+                
+                let inventory_id = getInventoryId(respuesta.data)
+                console.log(`inventory_id: ${inventory_id}`);
+                if(inventory_id !== null){
+                  //consultamos stock en FULL!!!
+                  const respuestaFull = await axios.get(`https://api.mercadolibre.com/inventories/${inventory_id}/stock/fulfillment`,
+                    {
+                        headers: {
+                          'Authorization': `Bearer ${respToken.data.token}` 
                         }
-                    );
+                      }
+                  );
 
-                    if (!respuestaFull || typeof respuestaFull !== 'object') {
-                      console.error('La respuesta no es un objeto válido o es null.');
-                      return false;
-                    }
-                      // Verifica si contiene propiedades clave
-                    if (!respuestaFull.hasOwnProperty('data')) {
-                      console.error('La respuesta no contiene la propiedad "data".');
-                      return false;
-                    }
-                    // Valida que el campo precio no sea null o undefined
-                    if (respuestaFull.data.available_quantity === null || respuestaFull.data.available_quantity === undefined) {
-                      console.error('El campo "available_quantity" es inválido.');
-                      return false;
-                    }
-                    //todo ok!!
-                    console.log(`available_quantity for inventory_id(${inventory_id}): ${respuestaFull.data.available_quantity}`);
-                    if (respuestaFull.data.available_quantity == 0){
-                      let sku = item.id.slice(3);
-                      console.log(`sku out stock (en FULL) ->${sku}`)
-                      messageMetaServices.notificationOutStock(sku);
-                    }
-
+                  if (!respuestaFull || typeof respuestaFull !== 'object') {
+                    console.error('La respuesta no es un objeto válido o es null.');
+                    return false;
                   }
+                    // Verifica si contiene propiedades clave
+                  if (!respuestaFull.hasOwnProperty('data')) {
+                    console.error('La respuesta no contiene la propiedad "data".');
+                    return false;
+                  }
+                  // Valida que el campo precio no sea null o undefined
+                  if (respuestaFull.data.available_quantity === null || respuestaFull.data.available_quantity === undefined) {
+                    console.error('El campo "available_quantity" es inválido.');
+                    return false;
+                  }
+                  //todo ok!!
+                  console.log(`available_quantity for inventory_id(${inventory_id}): ${respuestaFull.data.available_quantity}`);
+                  if (respuestaFull.data.available_quantity == 0){
+                    let sku = item.id.slice(3);
+                    console.log(`sku out stock (en FULL) ->${sku}`)
+                    /*let exists = await skuOrderExist(sku,orderNumber);
+                    if(!exists){
+                      messageMetaServices.notificationOutStock(sku);
+                    }*/
+                    await connectDB();
+                    console.log('Conexión a MongoDB exitosa');
+                        // Esperar el manejo de la notificación de la orden
+                    const result = await skuOrderExist(sku,orderNumber);
+                    // Verificar el resultado
+                    if (result) {
+                      console.log('La orden ya existe en la base de datos.');
+                    } else {
+                      console.log('La orden fue insertada en la base de datos.');
+                      messageMetaServices.notificationOutStock(sku)
+                    }
+                  }
+
                 }
+                
                 else{
                   console.log("No es fulfillment")
                 }
@@ -206,4 +264,30 @@ function getInventoryId(data){
     console.log("Sin variacion en full para invenroty id")
   }
   return inventory_id
+}
+
+async function  skuOrderExist(sku, order)
+{
+  console.log(`searching by sku ${sku} and order ${order}`)
+  try {
+    // Buscar si ya existe un documento con el mismo sku y order_number
+    const existingEntry = await LogOrderSku.findOne({ sku, order });
+
+    if (existingEntry) {
+      // Si ya existe, retornar true
+      console.log(`Exists: Yes`)
+      return true;
+    } else {
+      // Si no existe, crear una nueva entrada y retornar false
+      const newEntry = new LogOrderSku({ sku, order });
+      const savedEntry = await newEntry.save();
+      
+      // Imprimir el ID del objeto guardado
+      console.log('Exists: Not and ID del objeto guardado:', savedEntry._id);
+      return false;
+    }
+  } catch (error) {
+    console.error('Error al manejar la orden:', error);
+    throw new Error('Error al procesar la orden');
+  }
 }

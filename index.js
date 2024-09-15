@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParse = require("body-parser");
-const initDB = require('./config/db')
+const connectDB = require('./config/db')
 
 const app = express();
 const PORT = process.env.PORT || 2977;
@@ -29,4 +29,13 @@ app.listen(PORT,() =>{
     console.log(`Tu server esta listo en el puerto->${PORT}`)
 });
 
-initDB();
+//initDB();
+
+connectDB()
+  .then(() => {
+    console.log('Conexión inicializada');
+    // Aquí puedes empezar a manejar tus rutas o lógica de negocio
+  })
+  .catch((error) => {
+    console.error('Error al inicializar la conexión:', error);
+  });
