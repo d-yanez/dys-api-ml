@@ -3,14 +3,60 @@ const mail = require('../utils/mail')
 const authML = require('../services/authML')
 const authMLController = require('../controllers/authML')
 const orderWorder = require('../controllers/orderWorker')
+const orderApiServices = require('../services/orderApi');
+
+const Queue = require('bull');
+
+// Crear una cola para las órdenes
+const orderQueue = new Queue('orderQueue');
+
+// Procesar los trabajos en segundo plano
+orderQueue.process(async (job) => {
+  // Aquí haces la lógica pesada como consultar a Mercado Libre
+  console.log('Procesando la orden:', job.data);
+  //await handleOrderLogic(job.data); // Lógica que procesa el pedido
+  let order = job.data.match(/\/(\d+)$/)[1];
+  let resp = await orderApiServices.getOrderInfo(order)
+  console.log(resp)
+  console.log('Orden procesada');
+});
 
 exports.notification = async (req, res) => {
     console.log("notification...")
+    const messageOrder = req.body
+
+    console.log(messageOrder)
+    res.status(200).send({msg:'Orden recibida'})
+
+      // Ejecutar la lógica en segundo plano usando setImmediate
+    setImmediate(async () => {
+        console.log('Procesando la lógica en segundo plano...');
+        let order = (messageOrder.resource).match(/\/(\d+)$/)[1];
+        console.log(`order ->${order}`)
+        await orderApiServices.getOrderInfo(order)
+        console.log('Lógica de la orden completada');
+    });
     //console.log(`message ml: ${req.body}`)
     //mail.send(message)
-    orderWorder.order(req.body)
+    //orderWorder.order(req.body)
 
-    res.status(200).send({msg:'ok'})
+      // Añadir el trabajo a la cola
+    /*const orderData = req.body;
+    if ('resource' in orderData) {
+        console.log('put order in orderQueue');
+        //orderQueue.add(orderData);
+
+    }
+    else {
+        console.log('not exist resource field in object!');
+    }
+    */
+   
+
+    // Responder inmediatamente con 200 OK
+    //res.status(200).send('Orden recibida');
+
+    
 
 
 }

@@ -7,6 +7,8 @@ const {URLSearchParams} = require('url');
 const { param } = require('../routes/authML');
 const axios = require('axios')
 
+//https://www.mercadopago.cl/developers/es/docs/subscriptions/additional-content/security/oauth/renewal#editor_3
+
 exports.saveData = async (req, res) => {
     console.log("saving the next Stock...")
     console.log(req.body)
