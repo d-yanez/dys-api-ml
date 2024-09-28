@@ -8,7 +8,7 @@ const connectDB = require('../../config/db')
 
 
 const axios = require('axios')
-const {USER_TOKEN,PASS_TOKEN} = process.env
+const {USER_TOKEN,PASS_TOKEN,API_KEY_CF_TOKEN_ML} = process.env
 
 exports.saveData = async (req, res) => {
     console.log("saving the next Stock...")
@@ -64,15 +64,24 @@ exports.getOrderInfo = async (orderNumber) => {
     console.log(`getOrderInfo.init ->${orderNumber}`)
     //1.- get token by refresh token
     
-    const uri_token = "https://dys-api-ml-prd.up.railway.app/ml/auth/token"
+    /*const uri_token = "https://dys-api-ml-prd.up.railway.app/ml/auth/token"
     console.log(`getOrderInfo - get token by url ->${uri_token}`)
     const headers = {
         'Content-Type': 'application/json',
         'user': USER_TOKEN,
         'pass': PASS_TOKEN
       };
-    
-    const respToken = await axios.post(uri_token, {}, { headers })
+      //const respToken = await axios.post(uri_token, {}, { headers })
+    */
+   //API_KEY_CF_TOKEN_ML
+    console.log("call api ../dys-cf-api-ml-auth/auth/token")
+    const uri_token = "https://us-central1-prd-dyshopnow.cloudfunctions.net/dys-cf-api-ml-auth/auth/token"
+    const respToken = await axios.post(uri_token, null, {
+          headers: {
+            'x-api-key': API_KEY_CF_TOKEN_ML,  // Cambia 'tu-api-key' por tu clave real
+          }
+        });
+
     console.log(`getOrderInfo.token ->${respToken.data.token}`)
     //2.- get order info from api ML by order number
     //const form_data = new FormData();
