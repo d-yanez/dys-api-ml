@@ -57,6 +57,20 @@ exports.saveCodeTg = async (codeTg) => {
     
 }
 
+exports.cfCheckStockML = async(orderNumber) =>{
+  console.log("[cfCheckStockML]call api ../dys-cf-ml-check-stock/ml/check/stock")
+  const payload = {
+    orderId: orderNumber
+  };
+  const uri_token = "https://us-central1-prd-dyshopnow.cloudfunctions.net/dys-cf-ml-check-stock/ml/check/stock"
+  const respToken = await axios.post(uri_token, payload, {
+        headers: {
+          'x-api-key': API_KEY_CF_TOKEN_ML,  // Cambia 'tu-api-key' por tu clave real
+        }
+  });
+  console.log(`[cfCheckStockML] response.data ->${respToken.data}`)
+
+}
 
 //call ml/token (services dyshopnow who call api ml auth to get access token and refresh token)
 //get refresh token

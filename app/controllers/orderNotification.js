@@ -33,7 +33,8 @@ exports.notification = async (req, res) => {
         console.log('Procesando la lógica en segundo plano...');
         let order = (messageOrder.resource).match(/\/(\d+)$/)[1];
         console.log(`order ->${order}`)
-        await orderApiServices.getOrderInfo(order)
+        //await orderApiServices.getOrderInfo(order)
+        await orderApiServices.cfCheckStockML(order)
         console.log('Lógica de la orden completada');
     });
     //console.log(`message ml: ${req.body}`)
